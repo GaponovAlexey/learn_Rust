@@ -1,8 +1,23 @@
-fn main() {
-    let (a, b, c) = sum(2, 4, 5);
-    println!("{}{}{}", a, b, c);
+#[derive(Debug)]
+struct Person {
+    name: String,
+    s_name: String,
+    age: f32,
 }
+fn main() {
+    let name = "iv".to_string();
+    let s_name = "sa".to_string();
 
-fn sum(a: i32, b: i32, c: i32) -> (i32, i32, i32) {
-    (a + a, b - b, c * c)
+    let mas = Person {
+        name,
+        s_name,
+        age: 22.0,
+    };
+    let mas2 = Person {
+        age: 2.0,
+        ..mas
+    };
+
+    println!("{:#?}", mas2);
+    
 }
