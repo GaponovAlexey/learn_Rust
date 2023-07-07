@@ -1,12 +1,8 @@
 fn main() {
-    let name: String = String::from("Bob");
-    let age: f32 = f32::from(3.14);
-
-    print!("my args = {}, {}", age, name);
-    Lear();
+    let (a, b, c) = sum(2, 4, 5);
+    println!("{}{}{}", a, b, c);
 }
 
-fn Lear() {
-    let x = 5;
-    println!("{}", x)
+fn sum(a: i32, b: i32, c: i32) -> (i32, i32, i32) {
+    (a + a, b - b, c * c)
 }
