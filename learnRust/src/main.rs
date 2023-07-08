@@ -1,23 +1,29 @@
 #[derive(Debug)]
-struct Person {
-    name: String,
-    s_name: String,
-    age: f32,
+enum Types {
+    Int(i32),
+    Float(f64),
+    Bool(bool),
+    Text(String),
 }
 fn main() {
-    let name = "iv".to_string();
-    let s_name = "sa".to_string();
-
-    let mas = Person {
-        name,
-        s_name,
-        age: 22.0,
-    };
-    let mas2 = Person {
-        age: 2.0,
-        ..mas
-    };
-
-    println!("{:#?}", mas2);
-    
+    let list: Vec<Types> = vec![
+        Types::Int(8),
+        Types::Float(2.2),
+        Types::Bool(true),
+        Types::Text("ds".to_string()),
+    ];
+    match &list[1] {
+        Types::Int(el) => {
+            println!("{}", el);
+        }
+        Types::Float(el) => {
+            println!("{}", el);
+        }
+        Types::Bool(el) => {
+            println!("{}", el);
+        }
+        Types::Text(el) => {
+            println!("{}", el);
+        }
+    }
 }
