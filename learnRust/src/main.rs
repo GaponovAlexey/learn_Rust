@@ -6,8 +6,9 @@ fn main() {
 
     for s in s.split_whitespace() {
         let count = count_map.entry(s).or_insert(0);
+        // println!("{}", &count);
         *count += 1;
     }
 
-    println!("{:?}",count_map);
+    println!("{:?}", count_map);
 }
