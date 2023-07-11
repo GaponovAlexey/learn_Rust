@@ -1,24 +1,17 @@
-use std::{
-    fs::File,
-    io::{self, ErrorKind, Read},
-};
-
 fn main() {
-    let path = "text.txt";
-    match read_file(path) {
-        Ok(data) => println!("result in file => {:?}", data),
-        Err(e) => match e.kind() {
-            ErrorKind::NotFound => match File::create(path) {
-                Ok(_) => println!("create file"),
-                Err(e) => panic!("{}", e),
-            },
-            other => panic!("my Error {}", other),
-        },
-    };
+    let nums = [1, 2, 3, 4, 4, 3, 5, 5, 5, 6, 6, 7, 7, 9, 10];
+    println!("{:?}", find_duplicate(&nums));
 }
 
-fn read_file(path: &str) -> io::Result<String> {
-    let mut data = String::new();
-    File::open(path)?.read_to_string(&mut data)?;
-    Ok(data)
+fn find_duplicate(list: &[i32]) -> Vec<i32> {
+    let mut dup: Vec<i32> = Vec::new();
+
+    for i in 0..(list.len()) {
+        for j in (i + 1)..(list.len()) {
+            if list[i] == list[j] {
+                dup.push(list[i]);
+            }
+        }
+    }
+    dup
 }
