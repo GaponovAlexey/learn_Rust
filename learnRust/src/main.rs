@@ -5,9 +5,11 @@ fn main() {
 }
 
 fn find_duplicate(list: &[i32]) -> Vec<i32> {
-    let mut dup = Vec::new();
+ 
+ 
+       let mut dup = Vec::new();
 
-    for i in 0..list.len() {
+      for i in 0..list.len() {
         for j in i + 1..list.len() {
             if list[i] == list[j] && !dup.contains(&list[i]) {
                 dup.push(list[i]);
