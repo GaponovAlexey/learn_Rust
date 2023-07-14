@@ -1,21 +1,8 @@
 fn main() {
-    let nums = [1, 2, 3, 4, 4, 3, 5, 5, 5, 6, 6, 7, 7, 9, 10];
-    let res = find_duplicate(&nums);
-    println!("{:?}", res);
-}
+    let mut list: Vec<i32> = Vec::with_capacity(5);
 
-fn find_duplicate(list: &[i32]) -> Vec<i32> {
- 
- 
-       let mut dup = Vec::new();
+    list.push(2);
 
-      for i in 0..list.len() {
-        for j in i + 1..list.len() {
-            if list[i] == list[j] && !dup.contains(&list[i]) {
-                dup.push(list[i]);
-            }
-        }
-    }
-
-    dup
+    println!("{:?}", list);
+    println!("{:?}", list.capacity());
 }
