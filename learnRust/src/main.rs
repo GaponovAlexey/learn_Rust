@@ -25,9 +25,9 @@ struct Task {
 }
 
 impl Task {
-    fn new(name: String, description: String, priority: Priority) -> Self {
-        Self { name, description, priority, add_time: Local::now() }
-    }
+    // fn new(name: String, description: String, priority: Priority) -> Self {
+    //     Self { name, description, priority, add_time: Local::now() }
+    // }
     fn new_from_console() -> Self {
         let name = ConsoleManager::input("Enter your task name").expect("err");
         let description = ConsoleManager::input("Enter your task description").expect("err");
@@ -39,7 +39,7 @@ impl Task {
             "medium" => Priority::Medium,
             "high" => Priority::High,
             _ => {
-                println!("i don't understand");
+                println!("i don't understand but priority set low ");
                 Priority::Low
             }
         };
@@ -137,7 +137,7 @@ impl ConsoleManager {
 
     fn print_menu(&self) {
         for (index, menu_options) in self.menu_options.iter().enumerate() {
-            println!("{:?}\nOptions{}", index + 1, menu_options);
+            println!("{:?}: {}", index + 1, menu_options);
         }
     }
 
