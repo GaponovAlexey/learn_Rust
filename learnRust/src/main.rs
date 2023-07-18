@@ -1,7 +1,8 @@
-use std::io::Write;
-
+use std::{ io::{ Write, BufReader }, path::Path, fs::File };
+use serde::{ Deserialize, Serialize };
 use chrono::{ DateTime, Local };
 
+#[derive(Serialize, Deserialize)]
 enum Priority {
     Low,
     Medium,
@@ -17,6 +18,7 @@ impl Priority {
     }
 }
 
+#[derive(Serialize, Deserialize)]
 struct Task {
     name: String,
     description: String,
@@ -25,15 +27,16 @@ struct Task {
 }
 
 impl Task {
-    // fn new(name: String, description: String, priority: Priority) -> Self {
-    //     Self { name, description, priority, add_time: Local::now() }
-    // }
+    fn new(name: String, description: String, priority: Priority) -> Self {
+        Self { name, description, priority, add_time: Local::now() }
+    }
+
     fn new_from_console() -> Self {
         let name = ConsoleManager::input("Enter your task name").expect("err");
         let description = ConsoleManager::input("Enter your task description").expect("err");
 
         let priority = match
-            ConsoleManager::input("Enter new task priority").expect("err").as_str()
+            ConsoleManager::input("Enter new task priority").expect("err").to_lowercase().as_str()
         {
             "low" => Priority::Low,
             "medium" => Priority::Medium,
@@ -43,14 +46,15 @@ impl Task {
                 Priority::Low
             }
         };
-        Self { name, description, priority, add_time: Local::now() }
+        Self::new(name, description, priority)
     }
+
     fn print_task(&self) {
         println!(
             "\n****************************\n{} | {} | {:?}\n\"{}\"\n****************************\n",
             self.name,
             self.priority.to_string(),
-            self.add_time.format("%d-%m-%Y %H:%M:%S %z").to_string(),
+            self.add_time.format("%d-%m-%Y %H:%M:%S").to_string(),
             self.description
         )
     }
@@ -67,7 +71,6 @@ impl TasksManager {
 
     fn print_task(&self) {
         for task in &self.tasks {
-            println!("from TasksManager");
             task.print_task();
         }
     }
@@ -102,6 +105,47 @@ impl TasksManager {
             }
         } else {
             Err(format!("Task \"{}\" doesn't exist", name))
+        }
+    }
+
+    fn store_to_file(&self, filename: &str) -> Result<String, String> {
+        if !Path::new(filename).exists() {
+            let file = match File::create(filename) {
+                Ok(file) => file,
+                Err(e) => {
+                    return Err(format!("Failed to create file: {:?}", e));
+                }
+            };
+            match serde_json::to_writer(&file, &self.tasks) {
+                Ok(_) => Ok("Data stored Successfully".to_owned()),
+                Err(e) => {
+                    return Err(format!("Failed to write to file: {:?}", e));
+                }
+            }
+        } else {
+            return Err(format!("\"{}\" already exists", filename));
+        }
+    }
+    fn read_from_file(&mut self, filename: &str) -> Result<String, String> {
+        if !Path::new(filename).exists() {
+            let file = match File::create(filename) {
+                Ok(file) => file,
+                Err(e) => {
+                    return Err(format!("Failed to create file: {:?}", e));
+                }
+            };
+            let reader = BufReader::new(file);
+
+            self.tasks = match serde_json::from_reader(reader) {
+                Ok(data) => data,
+                Err(err) => {
+                    return Err(format!("err {}", err));
+                }
+            };
+
+            Ok("Data stored Successfully".to_owned())
+        } else {
+            return Err(format!("\"{}\" doesn't exists", filename));
         }
     }
 }
@@ -148,6 +192,7 @@ impl ConsoleManager {
                     "1" => { self.tasks_manager.add_task(Task::new_from_console()) }
                     "2" => {
                         let name = Self::input("enter task name to find").expect("err");
+
                         match self.tasks_manager.find_task(name.as_str()) {
                             Some(i) => {
                                 self.tasks_manager.tasks.get(i).expect("not find").print_task()
@@ -156,7 +201,7 @@ impl ConsoleManager {
                         }
                     }
                     "3" => {
-                        let name = Self::input("enter task name to find").expect("err");
+                        let name = Self::input("enter task name to edit").expect("err");
                         match self.tasks_manager.edit_task(name.as_str(), Task::new_from_console()) {
                             Ok(msg) => println!("edited ok {:?}", msg),
                             Err(msg) => println!("{:?}", msg),
@@ -170,8 +215,14 @@ impl ConsoleManager {
                         }
                     }
                     "5" => { self.tasks_manager.print_task() }
-                    "6" => {}
-                    "7" => {}
+                    "6" => {
+                        let file_name = Self::input("Enter file name").expect("err");
+                        self.tasks_manager.store_to_file(file_name.as_str()).expect("err");
+                    }
+                    "7" => {
+                        let file_name = Self::input("Enter file name to read").expect("err");
+                        self.tasks_manager.read_from_file(file_name.as_str()).expect("err");
+                    }
                     _ => { println!("i don't understand this command") }
                 }
             }
@@ -186,6 +237,6 @@ fn main() {
 
     loop {
         manager.process_command();
-        print!("");
+        println!("");
     }
 }
