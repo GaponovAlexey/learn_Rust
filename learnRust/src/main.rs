@@ -127,8 +127,8 @@ impl TasksManager {
         }
     }
     fn read_from_file(&mut self, filename: &str) -> Result<String, String> {
-        if !Path::new(filename).exists() {
-            let file = match File::create(filename) {
+        if Path::new(filename).exists() {
+            let file = match File::open(filename) {
                 Ok(file) => file,
                 Err(e) => {
                     return Err(format!("Failed to create file: {:?}", e));
